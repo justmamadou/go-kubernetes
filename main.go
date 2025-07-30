@@ -13,6 +13,7 @@ func main() {
 		clientSet *kubernetes.Clientset
 		err       error
 		//labels    map[string]string
+		//deployments []appsv1.Deployment
 	)
 	ctx := context.Background()
 
@@ -32,10 +33,33 @@ func main() {
 		fmt.Println("Deployment successful!")
 	*/
 
-	err = k8s.DeleteDeployment(ctx, clientSet, "my-app")
+	err = k8s.DeleteDeployment(ctx, clientSet, "my-app", "default")
 	if err != nil {
 		fmt.Printf("Error deleting deployment: %v\n", err)
 		return
 	}
 	fmt.Println("Deployment deleted successfully!")
+
+	/*
+		deployments, err = k8s.ListDeployments(ctx, clientSet, "uat")
+		if err != nil {
+			fmt.Printf("Error listing deployments: %v\n", err)
+			return
+		}
+
+		for _, dep := range deployments {
+			fmt.Printf("Deployment Name: %s\n", dep.Name)
+		}
+	*/
+
+	/*
+		deploy, err := k8s.GetDeployment(ctx, clientSet, "aggregatorcachin", "uat")
+		if err != nil {
+			fmt.Printf("Error getting deployment: %v\n", err)
+			return
+		}
+
+		fmt.Printf("Got deployment: %s\nAvailable replicas: %d\n", deploy.Name, deploy.Status.AvailableReplicas)
+	*/
+
 }

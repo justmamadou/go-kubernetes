@@ -56,6 +56,28 @@ func Deploy(ctx context.Context, clientset *kubernetes.Clientset) (map[string]st
 	return apps.Spec.Template.Labels, nil
 }
 
-func DeleteDeployment(ctx context.Context, clientset *kubernetes.Clientset, name string) error {
-	return clientset.AppsV1().Deployments("default").Delete(ctx, name, metav1.DeleteOptions{})
+func DeleteDeployment(ctx context.Context, clientset *kubernetes.Clientset, name, namespace string) error {
+	deployment, err := GetDeployment(ctx, clientset, name, namespace)
+	if err != nil {
+		return err
+	}
+	return clientset.AppsV1().Deployments(namespace).Delete(ctx, deployment.Name, metav1.DeleteOptions{})
+}
+
+func ListDeployments(ctx context.Context, clientset *kubernetes.Clientset, namespace string) ([]appsv1.Deployment, error) {
+	deployments, err := clientset.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	return deployments.Items, nil
+}
+
+func GetDeployment(ctx context.Context, clientset *kubernetes.Clientset, name, namespace string) (*appsv1.Deployment, error) {
+	deployment, err := clientset.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	return deployment, nil
 }
